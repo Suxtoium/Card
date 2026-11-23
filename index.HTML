@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitación de Cumpleaños - Yeslin</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #fdf6f8;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Botón flotante para silenciar/activar música */
+    .btn-musica {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      border: 3px solid #f48fb1;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      transition: transform 0.2s;
+    }
+
+    .btn-musica:hover {
+      transform: scale(1.1);
+    }
+
+    /* Contenedor de las imágenes */
+    .contenedor-invitacion {
+      position: relative;
+      width: 90vw;
+      max-width: 450px;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+    }
+
+    .contenedor-invitacion img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      user-select: none;
+    }
+
+    .img-cerrada {
+      opacity: 1;
+      transform: scale(0.95);
+      z-index: 2;
+    }
+
+    .img-abierta {
+      opacity: 0;
+      transform: scale(0.95);
+      z-index: 1;
+    }
+
+    /* --- ESTADO AL ABRIRSE --- */
+    .contenedor-invitacion.abierto .img-cerrada {
+      opacity: 0;
+      transform: scale(1);
+      pointer-events: none;
+    }
+
+    .contenedor-invitacion.abierto .img-abierta {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 3;
+    }
+
+    /* Texto de ayuda */
+    .instruccion {
+      color: #d87a98;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 16px;
+      transition: opacity 0.4s;
+    }
+
+    /* Contenedor de los botones */
+    .grupo-botones {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 15px;
+      opacity: 0;
+      transform: translateY(15px);
+      pointer-events: none;
+      transition: all 0.5s ease 0.25s;
+    }
+
+    .boton {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 20px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      border-radius: 50px;
+      border: 3px solid #ffffff;
+      text-align: center;
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .boton:hover {
+      transform: scale(1.04);
+      filter: brightness(1.05);
+    }
+
+    .btn-ubicacion {
+      background-color: #f48fb1;
+      box-shadow: 0 6px 15px rgba(244, 143, 177, 0.4);
+    }
+
+    .btn-whatsapp {
+      background-color: #8bc34a;
+      box-shadow: 0 6px 15px rgba(139, 195, 74, 0.4);
+    }
+
+    .contenedor-invitacion.abierto ~ .grupo-botones {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .contenedor-invitacion.abierto ~ .instruccion {
+      opacity: 0;
+      height: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Audio de fondo (guarda tu canción como musica-vaquita.mp3 en la misma carpeta) -->
+  <audio id="musicaFondo" loop>
+    <source src="musica-vaquita.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Botón de control de sonido -->
+  <button class="btn-musica" id="btnMusica" onclick="alternarMusica()" title="Activar o silenciar música">🔇</button>
+
+  <div class="contenedor-invitacion" onclick="abrirCarta(this)">
+    <img src="close-letter.png" alt="Sobre cerrado" class="img-cerrada">
+    <img src="open-letter.png" alt="Invitación Yeslin" class="img-abierta">
+  </div>
+
+  <p class="instruccion">👆 Toca el sobre para abrir</p>
+
+  <div class="grupo-botones">
+    <a href="https://google.com" target="_blank" class="boton btn-ubicacion">
+      📍 Ver dirección en el mapa
+    </a>
+
+    <a href="https://wa.me" target="_blank" class="boton btn-whatsapp">
+      💬 Confirmar Asistencia
+    </a>
+  </div>
+
+  <script>
+    const audio = document.getElementById('musicaFondo');
+    const btnMusica = document.getElementById('btnMusica');
+    let yaInicio = false;
+
+    function abrirCarta(elemento) {
+      elemento.classList.toggle('abierto');
+	
+      // Inicia la música automáticamente la primera vez que tocan el sobre
+      if (!yaInicio) {
+        audio.play().then(() => {
+          btnMusica.textContent = '🔊';
+          yaInicio = true;
+        }).catch(() => {
+          // Si el navegador bloquea el audio, el usuario puede usar el botón de arriba
+        });
+      }
+    }
+
+    function alternarMusica() {
+      if (audio.paused) {
+        audio.play();
+        btnMusica.textContent = '🔊';
+        yaInicio = true;
+      } else {
+        audio.pause();
+        btnMusica.textContent = '🔇';
+      }
+    }
+  </script>
+
+</body>
+</html>
